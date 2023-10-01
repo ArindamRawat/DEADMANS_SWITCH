@@ -2,33 +2,33 @@
 pragma solidity ^0.8.0;
 
 contract DeadmansSwitch {
-    address public owner;
-    address public designatedRecipient;
-    uint256 public lastCheckedBlock;
+    address public ownerAddress;
+    address public designatedRecipientAddress;
+    uint256 public lastCheckedBlockNumber;
 
     constructor(address _recipient) {
-        owner = msg.sender;
-        designatedRecipient = _recipient;
-        lastCheckedBlock = block.number;
+        ownerAddress = msg.sender;
+        designatedRecipientAddress = _recipient;
+        lastCheckedBlockNumber = block.number;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can call this function");
+        require(msg.sender == ownerAddress, "Only the owner can call this function");
         _;
     }
 
     modifier onlyRecipient() {
-        require(msg.sender == designatedRecipient, "Only the designated recipient can call this function");
+        require(msg.sender == designatedRecipientAddress, "Only the designated recipient can call this function");
         _;
     }
 
     function stillAlive() external onlyOwner {
-        lastCheckedBlock = block.number;
+        lastCheckedBlockNumber = block.number;
     }
 
     function withdrawFunds() external onlyOwner {
-        require(block.number - lastCheckedBlock >= 10, "The owner is still alive.");
+        require(block.number - lastCheckedBlockNumber >= 10, "The owner is still alive.");
         uint256 contractBalance = address(this).balance;
-        payable(owner).transfer(contractBalance);
+        payable(ownerAddress).transfer(contractBalance);
     }
 }
